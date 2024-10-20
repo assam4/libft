@@ -8,8 +8,8 @@ int	ft_memcmp(const void *str1, const void *str2, size_t n)
 	{
 		if (*(char *)str1 != *(char *)str2)
 			break ;
-		(char *)++str1;
-		(char *)++str2;
+		str1 = (char *)str1 + 1;
+		str2 = (char *)str2 + 1;
 	}
 	result = *(char *)str1 - *(char *)str2;
 	return (result);
