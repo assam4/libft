@@ -9,7 +9,7 @@ void	*ft_memchr(const void *s, int c, size_t n)
 	{
 		if (*(char *)s == letter)
 			return ((void *)s);
-		(char *)++s;
+		s = (char *)s + 1;
 	}
 	return (NULL);
 }
