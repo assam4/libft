@@ -1,14 +1,14 @@
 #include "libft.h"
 
-static size_t	str_len(int n)
+static size_t	number_len(int n)
 {
 	size_t	count;
 
+	if (!n)
+		return (1);
+	count = 0;
 	if (n < 0)
-		count = 2;
-	else
-		count = 1;
-	n /= 10;
+		++count;
 	while (n)
 	{
 		++count;
@@ -17,7 +17,7 @@ static size_t	str_len(int n)
 	return (count);
 }
 
-static size_t	ft_module(int n)
+static size_t	module(int n)
 {
 	if (n < 0)
 		return (-n);
@@ -27,22 +27,21 @@ static size_t	ft_module(int n)
 char	*ft_itoa(int n)
 {
 	char	*ptr;
-	size_t	len;
+	size_t	nb_len;
 
-	len = str_len(n);
-	ptr = (char *)malloc((len + 1) * sizeof(char));
-	if (ptr)
+	nb_len = number_len(n);
+	ptr = (char *)malloc((nb_len + 1) * sizeof(char));
+	if (!ptr)
+		return (NULL);
+	ptr[nb_len] = '\0';
+	if (n == 0)
+		*ptr = '0';
+	else if (n < 0)
+		*ptr = '-';
+	while (n)
 	{
-		if (n == 0)
-			*ptr = '0';
-		if (n < 0)
-			*ptr = '-';
-		ptr[len + 1] = '\0';
-		while (n)
-		{
-			ptr[--len] = ft_module(n % 10) + '0';
-			n /= 10;
-		}
+		ptr[--nb_len] = module(n % 10) + '0';
+		n /= 10;
 	}
 	return (ptr);
 }
