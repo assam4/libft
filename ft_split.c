@@ -1,6 +1,6 @@
 #include "libft.h"
 
-static size_t	words_count(const char *s, char c)
+static size_t	words_calc(const char *s, char c)
 {
 	size_t	count;
 	size_t	is_new;
@@ -21,44 +21,66 @@ static size_t	words_count(const char *s, char c)
 	return (count);
 }
 
-static size_t	length(char const *s, char *ptr)
+char	*new_word(const char **s, char c)
 {
-	if (ptr)
-		return (ft_strlen(s) - ft_strlen(ptr) + 1);
-	return (ft_strlen(s) + 1);
+	char	*end;
+	size_t	word_len;
+	char	*new_word;
+
+	while (**s == c)
+		++*s;
+	end = ft_strchr(*s, c);
+	if (end)
+		word_len = end - *s;
+	else
+		word_len = ft_strlen(*s);
+	new_word = (char *)malloc((word_len + 1) * sizeof(char));
+	if (!new_word)
+		return (NULL);
+	ft_strlcpy(new_word, *s, word_len + 1);
+	if (end)
+		*s = end;
+	return (new_word);
 }
 
-static char	*ignore_sep(char *p, char sep)
+static void	free_split(char ***s, size_t count)
 {
-	while (*p && *p == sep)
-		++p;
-	return (p);
+	size_t	i;
+
+	i = 0;
+	while (i < count)
+	{
+		free((*s)[i]);
+		++i;
+	}
+	free(*s);
+	*s = NULL;
+	return ;
 }
 
 char	**ft_split(char const *s, char c)
 {
 	size_t	count;
-	char	**arr;
-	char	*ptr;
-	size_t	len;
-	size_t	i;
+	char	**words_ptr;
+	size_t	index;
 
-	count = words_count(s, c);
-	arr = (char **)malloc((count + 1) * sizeof(char *));
-	if (arr && count && s)
+	if (!s)
+		return (NULL);
+	count = words_calc(s, c) + 1;
+	words_ptr = (char **)malloc(count * sizeof(void *));
+	if (!words_ptr)
+		return (NULL);
+	index = 0;
+	while (index < count - 1)
 	{
-		i = 0;
-		while (i != count && ptr)
+		words_ptr[index] = new_word(&s, c);
+		if (!words_ptr[index])
 		{
-			ptr = ft_strchr(s, c);
-			len = length(s, ptr);
-			arr[i] = (char *)malloc((len) * sizeof(char));
-			ft_strlcpy(arr[i++], s, len - 1);
-			if (ptr)
-				s = (char const *)ignore_sep(ptr, c);
+			free_split(&words_ptr, index);
+			return (NULL);
 		}
-		arr[i] = NULL;
-		return (arr);
+		++index;
 	}
-	return (NULL);
+	words_ptr[index] = NULL;
+	return (words_ptr);
 }
